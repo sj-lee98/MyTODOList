@@ -57,9 +57,20 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="qDd-TL-GtJ">
-                        <barButtonItem key="leftBarButtonItem" systemItem="edit" id="1QO-59-4Wn"/>
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="c0A-Ar-CrY"/>
+                        <barButtonItem key="leftBarButtonItem" systemItem="edit" id="1QO-59-4Wn">
+                            <connections>
+                                <action selector="tapEditButton:" destination="BYZ-38-t0r" id="Cch-yr-he1"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="c0A-Ar-CrY">
+                            <connections>
+                                <action selector="tapAddButton:" destination="BYZ-38-t0r" id="FhH-YU-KZv"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="tableView" destination="T2O-0y-Yih" id="mgL-nu-ZbS"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
