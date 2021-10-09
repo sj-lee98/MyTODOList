@@ -8,7 +8,9 @@
 import UIKit
 
 class ViewController: UIViewController {
+    @IBOutlet var editButton: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
+    var doneButton: UIBarButtonItem?
     var tasks = [Task]() {
         didSet { // 할일이 추가 될때마다 userDefaults에 할 일 저장
             self.saveTasks()
@@ -17,14 +19,23 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTap))
         self.tableView.dataSource = self
         self.tableView.delegate = self
         self.loadTasks() // 저장된 할 일 불러오기
     }
     
+    // selector 타입으로 전달할 메서드를 작성할때는 앞에 @objc 붙여줘야함
+    @objc func doneButtonTap() {
+        self.navigationItem.leftBarButtonItem = self.editButton
+        self.tableView.setEditing(false, animated: true)
+    }
     
     @IBAction func tapEditButton(_ sender: UIBarButtonItem) {
-        
+        // 테이블뷰가 비어있음 편집모드로 들어갈 필요가 없으니 tasks 배열이 비어있지 않을때만 편집모드로 전환
+        guard !self.tasks.isEmpty else { return }
+        self.navigationItem.leftBarButtonItem = self.doneButton
+        self.tableView.setEditing(true, animated: true)
     }
     
     @IBAction func tapAddButton(_ sender: UIBarButtonItem) {
@@ -87,7 +98,28 @@ extension ViewController: UITableViewDataSource { //UITableViewDataSource Protoc
             cell.accessoryType = .none
         }
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) { // 편집 모드에서 삭제 버튼을 눌렀을때 해당 셀이 어떤 셀인지 알려주는 메서드
+        self.tasks.remove(at: indexPath.row)
+        tableView.deleteRows(at: [indexPath], with: .automatic)
         
+        if self.tasks.isEmpty { //모두 삭제 되면 편집모드에서 나오게 됨
+            self.doneButtonTap()
+        }
+    }
+    
+    // 편집모드에서 할 일의 순서를 변경하는 기능 구현
+    func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        var tasks = self.tasks
+        let task = tasks[sourceIndexPath.row]
+        tasks.remove(at: sourceIndexPath.row)
+        tasks.insert(task, at: destinationIndexPath.row)
+        self.tasks = tasks
     }
 }
 
